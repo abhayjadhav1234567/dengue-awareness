@@ -7,7 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
   <script src="https://unpkg.com/globe.gl"></script>
-  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
     :root{--accent:#f94144;--accent2:#ff7b00;--card:#fff;--muted:#556;}
     body{font-family:Inter,Arial;margin:0;background:linear-gradient(180deg,#f7fbff,#e8f0ff);color:#17324d}
@@ -48,7 +47,7 @@
   </div>
 
   <div class="grid" style="margin-top:16px">
-    <div class="card">
+    <div class="card" id="visuals">
       <h2 style="color:var(--accent)">Interactive Visuals</h2>
       <div class="controls">
         <label for="yearSelect">Choose year:</label>
@@ -62,7 +61,14 @@
         </select>
       </div>
 
-      <div class="controls" style="margin:8px 0;"><label for="viewMode">View Mode:</label><select id="viewMode"><option value="casesdeaths" selected>Cases & Deaths</option><option value="cfr">CFR (%)</option></select></div>
+      <div class="controls" style="margin:8px 0;">
+        <label for="viewMode">View Mode:</label>
+        <select id="viewMode">
+          <option value="casesdeaths" selected>Cases & Deaths</option>
+          <option value="cfr">CFR (%)</option>
+        </select>
+      </div>
+
       <div class="charts" style="margin-top:12px">
         <div class="chart-box">
           <h4 class="small">Cases share (pie)</h4>
@@ -74,10 +80,11 @@
         </div>
       </div>
 
-      <h4 style="margin-top:12px">2D India Map (cases by state)</h4>
-<div id="indiaMap" style="height:420px"></div>
-<h4 style="margin-top:12px">3D Globe: size = cases, color = deaths</h4>
-<div id="globeViz"></div>
+      <h4 style="margin-top:12px">Top N States (Cases bar chart)</h4>
+      <canvas id="barChart"></canvas>
+
+      <h4 style="margin-top:12px">3D Globe: size = cases, color = deaths</h4>
+      <div id="globeViz"></div>
     </div>
 
     <div class="card" id="details">
@@ -110,12 +117,12 @@ function populateYearSelect(){
 }
 
 function getTopStatesByYear(year, N){
-  const arr = window.dengueStateData.map(s=>({state:s.state,cases:s.values[year].cases,deaths:s.values[year].deaths,values:s.values}));
+  const arr = window.dengueStateData.map(s=>({state:s.state,cases:s.values[year].cases,deaths:s.values[year].deaths,values:s.values,lat:s.lat,lng:s.lng}));
   arr.sort((a,b)=>b.cases-a.cases);
   return arr.slice(0, N);
 }
 
-let pieChart,lineChart,globe;
+let pieChart,lineChart,barChart,globe;
 
 function buildPie(year, N){
   const top = getTopStatesByYear(year, N);
@@ -123,14 +130,10 @@ function buildPie(year, N){
   if(pieChart) pieChart.destroy();
   pieChart = new Chart(ctx, {
     type:'pie',
-    data:{
-      labels: top.map(t=>t.state),
-      datasets:[{data: top.map(t=>t.cases)}]
-    },
+    data:{labels: top.map(t=>t.state),datasets:[{data: top.map(t=>t.cases)}]},
     options:{plugins:{legend:{position:'bottom'}}}
   });
 }
-
 
 function buildLine(N, viewMode){
   const topStates = getTopStatesByYear("2024", N).map(t=>t.state);
@@ -187,43 +190,14 @@ function buildLine(N, viewMode){
   }
 }
 
-  // trend across years for top N states by 2024
-  const topStates = getTopStatesByYear("2024", N).map(t=>t.state);
-  const datasets = topStates.map(s=>{
-    const obj = window.dengueStateData.find(d=>d.state===s);
-    return {
-      label: s + " cases",
-      data: years.map(y=>obj.values[y].cases),
-      borderColor: undefined,
-      tension:0.3,
-      yAxisID: 'y'
-    };
-  });
-  const deathDatasets = topStates.map(s=>{
-    const obj = window.dengueStateData.find(d=>d.state===s);
-    return {
-      label: s + " deaths",
-      data: years.map(y=>obj.values[y].deaths),
-      borderDash:[5,3],
-      tension:0.3,
-      borderColor: undefined,
-      yAxisID: 'yDeaths'
-    };
-  });
-  const ctx = document.getElementById('lineChart').getContext('2d');
-  if(lineChart) lineChart.destroy();
-  lineChart = new Chart(ctx, {
-    type:'line',
-    data:{labels:years, datasets: [...datasets, ...deathDatasets]},
-    options:{
-      interaction:{mode:'index',intersect:false},
-      stacked:false,
-      plugins:{legend:{position:'bottom'}},
-      scales:{
-        y:{type:'linear',display:true,position:'left',title:{display:true,text:'Cases'}},
-        yDeaths:{type:'linear',display:true,position:'right',title:{display:true,text:'Deaths'},grid:{drawOnChartArea:false}}
-      }
-    }
+function buildBar(year, N){
+  const top = getTopStatesByYear(year, N);
+  const ctx = document.getElementById('barChart').getContext('2d');
+  if(barChart) barChart.destroy();
+  barChart = new Chart(ctx, {
+    type:'bar',
+    data:{labels: top.map(t=>t.state),datasets:[{label:'Cases',data: top.map(t=>t.cases),backgroundColor:'#f94144'}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,title:{display:true,text:'Cases'}}}}
   });
 }
 
@@ -246,9 +220,8 @@ function buildTable(N){
 }
 
 function buildGlobe(year, N){
-  // create points data
   const top = getTopStatesByYear(year, N);
-  const points = top.map((d,i)=>({
+  const points = top.map(d=>({
     lat: d.lat,
     lng: d.lng,
     size: Math.max(0.8, Math.log(d.cases+1)/1.6),
@@ -257,7 +230,6 @@ function buildGlobe(year, N){
     cases: d.cases,
     deaths: d.deaths
   }));
-  // initialize globe once
   if(!globe){
     globe = Globe()(document.getElementById('globeViz'))
       .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
@@ -265,42 +237,20 @@ function buildGlobe(year, N){
       .pointsData(points)
       .pointAltitude('size')
       .pointColor('color')
-      .pointLabel(p=>`${p.name}\nCases: ${p.cases}\nDeaths: ${p.deaths}`)
-      .onPointClick(p=>alert(p.name + "\nCases: " + p.cases + "\nDeaths: " + p.deaths));
+      .pointLabel(p=>`${p.name}\nCases: ${p.cases}\nDeaths: ${p.deaths}`);
   } else {
     globe.pointsData(points);
   }
-}
-
-
-function buildIndiaMap(year,N){
-  const top = getTopStatesByYear(year,N);
-  const states = top.map(d=>d.state);
-  const cases = top.map(d=>d.cases);
-  const data = [{
-    type: 'choropleth',
-    locationmode: 'country names',
-    locations: states,
-    z: cases,
-    colorscale: 'Reds',
-    colorbar: {title: 'Cases'},
-    text: states.map((s,i)=>s + "<br>Cases: " + cases[i]),
-    hoverinfo: 'text'
-  }];
-  const layout = {
-    geo: {scope: 'asia', projection: {type: 'mercator'}, center: {lat:22,lng:80}, lonaxis:{range:[65,95]}, lataxis:{range:[7,37]}},
-    margin:{l:0,r:0,t:0,b:0}
-  };
-  Plotly.newPlot('indiaMap', data, layout, {displayModeBar:false});
 }
 
 function updateVisuals(){
   const year = document.getElementById('yearSelect').value;
   const N = parseInt(document.getElementById('topN').value,10);
   buildPie(year,N);
-  const viewMode=document.getElementById('viewMode').value; buildLine(N,viewMode);
+  const viewMode=document.getElementById('viewMode').value; 
+  buildLine(N,viewMode);
+  buildBar(year,N);
   buildTable(N);
-  buildIndiaMap(year,N);
   buildGlobe(year,N);
 }
 
