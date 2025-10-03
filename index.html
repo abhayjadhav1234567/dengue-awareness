@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dengue Awareness Project</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    :root{--accent:#f94144;--accent2:#ff7b00;--card:#fff;--muted:#556;}
+    body{font-family:Inter,Arial;margin:0;background:linear-gradient(180deg,#f7fbff,#e8f0ff);color:#17324d}
+    header{padding:28px;text-align:center}
+    header h1{margin:0;color:var(--accent)}
+    .keywords{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+    .kw{background:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+    .container{max-width:1100px;margin:20px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(16,24,40,0.06)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+    th{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+    .charts{display:flex;gap:12px;flex-wrap:wrap}
+    .chart-box{flex:1;min-width:260px;background:linear-gradient(180deg,#fff,#fbfdff);padding:8px;border-radius:10px}
+    #globeViz{height:420px;border-radius:10px;margin-top:8px}
+    footer{text-align:center;padding:12px;color:#6b7a8a}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Dengue Awareness Project</h1>
+  <p class="muted">Interactive visuals for 2021–2025 (top states) — Data: NVBDCP (Oct 03, 2025)</p>
+  <div class="keywords">
+    <div class="kw" onclick="document.getElementById('what').scrollIntoView({behavior:'smooth'})">What is Dengue?</div>
+    <div class="kw" onclick="document.getElementById('symptoms').scrollIntoView({behavior:'smooth'})">Symptoms</div>
+    <div class="kw" onclick="document.getElementById('prevention').scrollIntoView({behavior:'smooth'})">Prevention</div>
+    <div class="kw" onclick="document.getElementById('visuals').scrollIntoView({behavior:'smooth'})">Visuals</div>
+  </div>
+</header>
+
+<div class="container">
+  <div id="what" class="card">
+    <h2 style="color:var(--accent)">What is Dengue?</h2>
+    <p>Dengue is a mosquito-borne viral disease. Severe dengue can cause bleeding, shock, and death. This site shows official NVBDCP counts for top states (2021–2025).</p>
+  </div>
+
+  <div class="grid" style="margin-top:16px">
+    <div class="card">
+      <h2 style="color:var(--accent)">Interactive Visuals</h2>
+      <div class="controls">
+        <label for="yearSelect">Choose year:</label>
+        <select id="yearSelect"></select>
+
+        <label for="topN">Top N states:</label>
+        <select id="topN">
+          <option value="6">Top 6</option>
+          <option value="8" selected>Top 8</option>
+          <option value="11">Top 11</option>
+        </select>
+      </div>
+
+      <div class="controls" style="margin:8px 0;"><label for="viewMode">View Mode:</label><select id="viewMode"><option value="casesdeaths" selected>Cases & Deaths</option><option value="cfr">CFR (%)</option></select></div>
+      <div class="charts" style="margin-top:12px">
+        <div class="chart-box">
+          <h4 class="small">Cases share (pie)</h4>
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="chart-box">
+          <h4 class="small">Cases & Deaths trend (line)</h4>
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+
+      <h4 style="margin-top:12px">2D India Map (cases by state)</h4>
+<div id="indiaMap" style="height:420px"></div>
+<h4 style="margin-top:12px">3D Globe: size = cases, color = deaths</h4>
+<div id="globeViz"></div>
+    </div>
+
+    <div class="card" id="details">
+      <h3 style="color:var(--accent)">Top States Data (2021–2025)</h3>
+      <div id="tableWrap"></div>
+      <p class="small muted" style="margin-top:8px">Source: NCVBDC / NVBDCP — DENGUE SITUATION IN INDIA (Updated Oct 03, 2025)</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Dengue Awareness Project — Prepared for classroom presentation. Use data.gov.in / NVBDCP for full lists.</p>
+  </footer>
+</div>
+
+<script src="dengue_data_nvbdcp_top_states.js"></script>
+<script>
+const years = ["2021","2022","2023","2024","2025"];
+
+function populateYearSelect(){
+  const sel = document.getElementById('yearSelect');
+  years.forEach(y=>{
+    const opt = document.createElement('option');
+    opt.value = y; opt.textContent = y;
+    sel.appendChild(opt);
+  });
+  sel.value = "2024";
+  sel.addEventListener('change', updateVisuals);
+  document.getElementById('topN').addEventListener('change', updateVisuals);
+  document.getElementById('viewMode').addEventListener('change', updateVisuals);
+}
+
+function getTopStatesByYear(year, N){
+  const arr = window.dengueStateData.map(s=>({state:s.state,cases:s.values[year].cases,deaths:s.values[year].deaths,values:s.values}));
+  arr.sort((a,b)=>b.cases-a.cases);
+  return arr.slice(0, N);
+}
+
+let pieChart,lineChart,globe;
+
+function buildPie(year, N){
+  const top = getTopStatesByYear(year, N);
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  if(pieChart) pieChart.destroy();
+  pieChart = new Chart(ctx, {
+    type:'pie',
+    data:{
+      labels: top.map(t=>t.state),
+      datasets:[{data: top.map(t=>t.cases)}]
+    },
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+
+function buildLine(N, viewMode){
+  const topStates = getTopStatesByYear("2024", N).map(t=>t.state);
+  const ctx = document.getElementById('lineChart').getContext('2d');
+  if(lineChart) lineChart.destroy();
+  if(viewMode==='cfr'){
+    const datasets = topStates.map(s=>{
+      const obj = window.dengueStateData.find(d=>d.state===s);
+      return {
+        label: s + " CFR%",
+        data: years.map(y=> obj.values[y].cases>0 ? (obj.values[y].deaths/obj.values[y].cases*100).toFixed(2):0 ),
+        tension:0.3,
+        borderDash:[5,0]
+      };
+    });
+    lineChart = new Chart(ctx, {
+      type:'line',
+      data:{labels:years,datasets:datasets},
+      options:{plugins:{legend:{position:'bottom'}},scales:{y:{title:{display:true,text:'CFR %'}}}}
+    });
+  } else {
+    const datasets = topStates.map(s=>{
+      const obj = window.dengueStateData.find(d=>d.state===s);
+      return {
+        label: s + " cases",
+        data: years.map(y=>obj.values[y].cases),
+        tension:0.3,
+        yAxisID:'y'
+      };
+    });
+    const deathDatasets = topStates.map(s=>{
+      const obj = window.dengueStateData.find(d=>d.state===s);
+      return {
+        label: s + " deaths",
+        data: years.map(y=>obj.values[y].deaths),
+        borderDash:[5,3],
+        tension:0.3,
+        yAxisID:'yDeaths'
+      };
+    });
+    lineChart = new Chart(ctx, {
+      type:'line',
+      data:{labels:years,datasets:[...datasets,...deathDatasets]},
+      options:{
+        interaction:{mode:'index',intersect:false},
+        stacked:false,
+        plugins:{legend:{position:'bottom'}},
+        scales:{
+          y:{type:'linear',display:true,position:'left',title:{display:true,text:'Cases'}},
+          yDeaths:{type:'linear',display:true,position:'right',title:{display:true,text:'Deaths'},grid:{drawOnChartArea:false}}
+        }
+      }
+    });
+  }
+}
+
+  // trend across years for top N states by 2024
+  const topStates = getTopStatesByYear("2024", N).map(t=>t.state);
+  const datasets = topStates.map(s=>{
+    const obj = window.dengueStateData.find(d=>d.state===s);
+    return {
+      label: s + " cases",
+      data: years.map(y=>obj.values[y].cases),
+      borderColor: undefined,
+      tension:0.3,
+      yAxisID: 'y'
+    };
+  });
+  const deathDatasets = topStates.map(s=>{
+    const obj = window.dengueStateData.find(d=>d.state===s);
+    return {
+      label: s + " deaths",
+      data: years.map(y=>obj.values[y].deaths),
+      borderDash:[5,3],
+      tension:0.3,
+      borderColor: undefined,
+      yAxisID: 'yDeaths'
+    };
+  });
+  const ctx = document.getElementById('lineChart').getContext('2d');
+  if(lineChart) lineChart.destroy();
+  lineChart = new Chart(ctx, {
+    type:'line',
+    data:{labels:years, datasets: [...datasets, ...deathDatasets]},
+    options:{
+      interaction:{mode:'index',intersect:false},
+      stacked:false,
+      plugins:{legend:{position:'bottom'}},
+      scales:{
+        y:{type:'linear',display:true,position:'left',title:{display:true,text:'Cases'}},
+        yDeaths:{type:'linear',display:true,position:'right',title:{display:true,text:'Deaths'},grid:{drawOnChartArea:false}}
+      }
+    }
+  });
+}
+
+function buildTable(N){
+  const top = getTopStatesByYear("2024", N);
+  const wrap = document.getElementById('tableWrap');
+  wrap.innerHTML = '';
+  const tbl = document.createElement('table');
+  const thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>State</th><th>2021 (C/D)</th><th>2022 (C/D)</th><th>2023 (C/D)</th><th>2024 (C/D)</th><th>2025 (C/D)</th></tr>';
+  tbl.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  top.forEach(s=>{
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${s.state}</td>` + years.map(y=>`<td>${s.values[y].cases}/${s.values[y].deaths}</td>`).join('');
+    tbody.appendChild(row);
+  });
+  tbl.appendChild(tbody);
+  wrap.appendChild(tbl);
+}
+
+function buildGlobe(year, N){
+  // create points data
+  const top = getTopStatesByYear(year, N);
+  const points = top.map((d,i)=>({
+    lat: d.lat,
+    lng: d.lng,
+    size: Math.max(0.8, Math.log(d.cases+1)/1.6),
+    color: d.deaths>10 ? 'rgba(244,65,68,0.9)' : (d.deaths>2 ? 'rgba(255,160,70,0.9)' : 'rgba(100,200,120,0.9)'),
+    name: d.state,
+    cases: d.cases,
+    deaths: d.deaths
+  }));
+  // initialize globe once
+  if(!globe){
+    globe = Globe()(document.getElementById('globeViz'))
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+      .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+      .pointsData(points)
+      .pointAltitude('size')
+      .pointColor('color')
+      .pointLabel(p=>`${p.name}\nCases: ${p.cases}\nDeaths: ${p.deaths}`)
+      .onPointClick(p=>alert(p.name + "\nCases: " + p.cases + "\nDeaths: " + p.deaths));
+  } else {
+    globe.pointsData(points);
+  }
+}
+
+
+function buildIndiaMap(year,N){
+  const top = getTopStatesByYear(year,N);
+  const states = top.map(d=>d.state);
+  const cases = top.map(d=>d.cases);
+  const data = [{
+    type: 'choropleth',
+    locationmode: 'country names',
+    locations: states,
+    z: cases,
+    colorscale: 'Reds',
+    colorbar: {title: 'Cases'},
+    text: states.map((s,i)=>s + "<br>Cases: " + cases[i]),
+    hoverinfo: 'text'
+  }];
+  const layout = {
+    geo: {scope: 'asia', projection: {type: 'mercator'}, center: {lat:22,lng:80}, lonaxis:{range:[65,95]}, lataxis:{range:[7,37]}},
+    margin:{l:0,r:0,t:0,b:0}
+  };
+  Plotly.newPlot('indiaMap', data, layout, {displayModeBar:false});
+}
+
+function updateVisuals(){
+  const year = document.getElementById('yearSelect').value;
+  const N = parseInt(document.getElementById('topN').value,10);
+  buildPie(year,N);
+  const viewMode=document.getElementById('viewMode').value; buildLine(N,viewMode);
+  buildTable(N);
+  buildIndiaMap(year,N);
+  buildGlobe(year,N);
+}
+
+populateYearSelect();
+updateVisuals();
+</script>
+</body>
+</html>
