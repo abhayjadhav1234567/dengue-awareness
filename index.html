@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Dengue Awareness</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+</head><body>
+<header class="site-header">
+  <div class="title-wrap">
+    <div class="mosquitoes" aria-hidden="true">
+      <div class="mosq mosq1"></div>
+      <div class="mosq mosq2"></div>
+      <div class="mosq mosq3"></div>
+    </div>
+    <h1 id="siteTitle">Dengue Awareness</h1>
+  </div>
+  <div class="nav">
+    <button data-target="definition">What is Dengue?</button>
+    <button data-target="symptoms">Symptoms</button>
+    <button data-target="prevention">Prevention</button>
+    <button data-target="treatment">Treatment</button>
+    <button data-target="visuals">Visuals of Data</button>
+  </div>
+</header>
+<main>
+  <section id="definition" class="card"><h2>What is Dengue?</h2><p>Dengue is a mosquito-borne viral infection caused by the bite of the Aedes aegypti mosquito. Severe dengue can be life-threatening.</p></section>
+  <section id="symptoms" class="card"><h2>Symptoms</h2><ul><li>High fever</li><li>Severe headache</li><li>Muscle and joint pains</li><li>Nausea and vomiting</li><li>Skin rash (2–5 days)</li></ul>
+  <h3>Organs Affected</h3>
+  <div class="table-wrap"><table class="organs"><thead><tr><th>Organ</th><th>Normal Work</th><th>What Dengue Virus Does</th><th>What Problem Happens</th></tr></thead><tbody>
+  <tr><td><strong>Liver</strong> 🟠</td><td>Cleans blood, makes proteins for clotting, helps digestion</td><td>Virus enters liver cells → immune attack → swelling → enzymes leak into blood</td><td>Poor cleaning, less clotting → <strong>bleeding risk, liver failure</strong></td></tr>
+  <tr><td><strong>Bone Marrow</strong> 🔴</td><td>Produces blood cells (RBC, WBC, Platelets)</td><td>Virus slows marrow → platelet production drops</td><td>Very <strong>low platelets</strong> → bleeding</td></tr>
+  <tr><td><strong>Blood Vessels</strong> 🔵</td><td>Carry blood safely without leakage</td><td>Virus weakens vessel walls → plasma leaks out</td><td>Blood pressure falls → organs don’t get oxygen → <strong>shock</strong></td></tr>
+  <tr><td><strong>Spleen</strong> 🟣</td><td>Filters blood, removes old cells, supports immunity</td><td>Becomes overworked and swells up</td><td>Pain, rare risk of <strong>rupture and bleeding</strong></td></tr>
+  <tr><td><strong>Brain</strong> 🟡</td><td>Controls body functions, memory, thinking</td><td>Sometimes swelling or small bleeding in brain tissue</td><td>Headache, confusion, seizures → <strong>unconsciousness</strong></td></tr>
+  <tr><td><strong>Heart</strong> 💚</td><td>Pumps blood to whole body</td><td>Virus may weaken heart muscles (myocarditis)</td><td>Weak pumping → fatigue, chest pain, breathlessness</td></tr>
+  </tbody></table></div></section>
+
+  <section id="prevention" class="card"><h2>Prevention</h2><ul><li>Use mosquito repellents and nets</li><li>Eliminate stagnant water</li><li>Wear protective clothing</li><li>Community awareness</li></ul>
+  <h3>Treatment & Care</h3>
+  <div class="table-wrap"><table class="treatment"><thead><tr><th>Type</th><th>Treatment Step</th><th>What It Means</th><th>Why It Is Important</th></tr></thead><tbody>
+  <tr><td>🏠 <strong>Home Remedies / Self-Care</strong></td><td><strong>Rest & Hydration</strong></td><td>Bed rest, drink lots of water, ORS, juices, coconut water</td><td>Prevents dehydration from fever and plasma leakage</td></tr>
+  <tr><td></td><td><strong>Fever Control</strong></td><td>Take <strong>Paracetamol</strong> only (avoid aspirin/ibuprofen)</td><td>Controls fever safely without increasing bleeding risk</td></tr>
+  <tr><td></td><td><strong>Nutrition</strong></td><td>Eat light, healthy food (fruits, porridge, vegetables, soups)</td><td>Helps recovery and boosts immunity</td></tr>
+  <tr><td></td><td><strong>Monitoring at Home</strong></td><td>Check temperature, watch for warning signs</td><td>Detects early danger signs so hospital care can be given quickly</td></tr>
+  <tr><td>🏥 <strong>Doctor / Hospital Care</strong></td><td><strong>Regular Blood Tests</strong></td><td>Platelet count & hematocrit monitoring</td><td>Detects risk of bleeding and shock early</td></tr>
+  <tr><td></td><td><strong>IV Fluids</strong></td><td>Intravenous fluids if patient is dehydrated or in shock</td><td>Maintains blood pressure and hydration</td></tr>
+  <tr><td></td><td><strong>Oxygen & Monitoring</strong></td><td>Patient kept under observation with oxygen support if needed</td><td>Prevents organ damage and shock</td></tr>
+  <tr><td></td><td><strong>Platelet / Blood Transfusion</strong></td><td>Given only if platelets are very low or severe bleeding</td><td>Saves life in critical dengue cases</td></tr>
+  </tbody></table></div></section>
+
+  <section id="charts" class="card">
+    <h2>Visuals — Charts</h2>
+    <div class="chart-labels">
+      <div class="label left">🧾 Top 10 States by Dengue Cases (Selected Year)</div>
+      <div class="label right">📈 Yearly Dengue Cases Trend (2021–2025)</div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-box small"><canvas id="pieChart" width="400" height="300"></canvas></div>
+      <div class="chart-box large"><canvas id="barChart" width="600" height="300"></canvas></div>
+    </div>
+    <div class="line-chart"><div class="label">⚰️ Dengue Deaths Trend (2021–2025)</div><canvas id="lineChart" width="1000" height="200"></canvas></div>
+    <div class="controls"><label for="yearSelect">Select Year:</label><select id="yearSelect"></select><label for="chartType">Chart Type:</label><select id="chartType"><option value="pie">Pie</option><option value="doughnut">Doughnut</option></select></div>
+  </section>
+
+  <section id="visuals" class="card">
+    <h2>Visuals of Data</h2>
+    <div id="globeViz" style="height:550px"></div>
+  </section>
+
+  <section id="final" class="card center">
+    <button id="endBtn" class="end-btn">🎥 End Presentation</button>
+    <div id="goodbye" class="goodbye"><span>🦟 Take care of yourself</span></div>
+  </section>
+</main>
+
+<footer class="site-footer"><p>© 2025 Dengue Awareness</p></footer>
+
+<script src="data.js"></script>
+<script>
+document.querySelectorAll('.nav button').forEach(function(b){b.addEventListener('click',function(){var t=document.getElementById(this.getAttribute('data-target')); if(t) t.scrollIntoView({behavior:'smooth'});});});
+function createMosqMotion(className, speed, radiusX, radiusY, phase){const el=document.querySelector(className);let t=phase;function step(){t+=speed;const x=50+radiusX*Math.cos(t);const y=10+radiusY*Math.sin(2*t);const rot=10*Math.sin(3*t);el.style.transform='translate('+x+'px, '+y+'px) rotate('+rot+'deg)';requestAnimationFrame(step);}step();}
+createMosqMotion('.mosq1',0.012,40,8,0);createMosqMotion('.mosq2',0.016,55,10,1.2);createMosqMotion('.mosq3',0.009,30,6,2.1);
+availableYears.forEach(function(y){var o=document.createElement('option');o.value=y;o.textContent=y;document.getElementById('yearSelect').appendChild(o);});document.getElementById('yearSelect').value=Math.max.apply(null, availableYears);
+let pieChart, barChart, lineChart;
+function drawAll(year){var yearStr=String(year);var entries=Object.keys(dengueDataAllStates).map(function(s){return {state:s,cases:dengueDataAllStates[s][yearStr].cases, deaths:dengueDataAllStates[s][yearStr].deaths};});entries.sort(function(a,b){return b.cases-a.cases;});var top10=entries.slice(0,10);var labels=top10.map(function(e){return e.state}), vals=top10.map(function(e){return e.cases});const pctx=document.getElementById('pieChart').getContext('2d');if(pieChart) pieChart.destroy();pieChart=new Chart(pctx,{type:document.getElementById('chartType').value,data:{labels:labels,datasets:[{data:vals,backgroundColor:labels.map(function(l,i){return 'hsl('+ (i*30+10) +',70%,50%)';})}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});const bctx=document.getElementById('barChart').getContext('2d');if(barChart) barChart.destroy();const years=availableYears;const sums=years.map(function(y){return Object.keys(dengueDataAllStates).reduce(function(acc,s){return acc + dengueDataAllStates[s][String(y)].cases;},0);});barChart=new Chart(bctx,{type:'bar',data:{labels:years.map(String),datasets:[{label:'Total Dengue Cases (India)',data:sums,backgroundColor:'rgba(46,204,113,0.7)'}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'Number of Cases'}}}}});const lctx=document.getElementById('lineChart').getContext('2d');if(lineChart) lineChart.destroy();const deaths=years.map(function(y){return Object.keys(dengueDataAllStates).reduce(function(acc,s){return acc + dengueDataAllStates[s][String(y)].deaths;},0);});lineChart=new Chart(lctx,{type:'line',data:{labels:years.map(String),datasets:[{label:'Total Dengue Deaths (India)',data:deaths,borderColor:'#e74c3c',backgroundColor:'rgba(231,76,60,0.2)',tension:0.3}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'Number of Deaths'}}}}});}
+drawAll(Math.max.apply(null, availableYears));
+document.getElementById('yearSelect').addEventListener('change',function(){drawAll(this.value);updateGlobe(Number(this.value));});document.getElementById('chartType').addEventListener('change',function(){drawAll(document.getElementById('yearSelect').value);});
+const world = Globe()(document.getElementById('globeViz')).globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg').backgroundColor('rgba(0,0,0,0)');
+fetch('india_states_full.json').then(function(r){return r.json();}).then(function(g){var pts=g.features.map(function(f){return {lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],size:Math.max(0.4,Math.log10(Math.max(1,f.properties.cases_2025))),color:(f.properties.cases_2025>15000?'red':(f.properties.cases_2025>8000?'orange':'yellowgreen')),name:f.properties.name,cases:f.properties.cases_2025,deaths:f.properties.deaths_2025};});world.pointsData(pts).pointAltitude('size').pointColor('color').pointLabel(function(d){return '<b>'+d.name+'</b><br>Cases: '+d.cases+'<br>Deaths: '+d.deaths;});});
+function updateGlobe(year){fetch('india_states_full.json').then(function(r){return r.json();}).then(function(g){var pts=g.features.map(function(f){var st=f.properties.name;var cases=(dengueDataAllStates[st]&&dengueDataAllStates[st][String(year)])?dengueDataAllStates[st][String(year)].cases:f.properties.cases_2025;var deaths=(dengueDataAllStates[st]&&dengueDataAllStates[st][String(year)])?dengueDataAllStates[st][String(year)].deaths:f.properties.deaths_2025;return {lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],size:Math.max(0.4,Math.log10(Math.max(1,cases))),color:(cases>15000?'red':(cases>8000?'orange':'yellowgreen')),name:st,cases:cases,deaths:deaths};});world.pointsData(pts).pointAltitude('size').pointColor('color').pointLabel(function(d){return '<b>'+d.name+'</b><br>Cases: '+d.cases+'<br>Deaths: '+d.deaths;});});}
+const endBtn=document.getElementById('endBtn');const goodbye=document.getElementById('goodbye');endBtn.addEventListener('click',function(){document.body.classList.add('dim');for(let i=0;i<3;i++){const el=document.createElement('div');el.className='mosq fly'+i;document.body.appendChild(el);setTimeout(()=>el.classList.add('toCenter'),50+i*300);setTimeout(()=>{el.classList.add('fadeout');setTimeout(()=>el.remove(),2000);},5000);}goodbye.classList.add('show');setTimeout(()=>{goodbye.classList.remove('show');document.body.classList.remove('dim');},5200);});
+</script></body></html>
