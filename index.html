@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dengue Awareness Project</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:,">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header>
+    <h1><i class="fas fa-bug"></i> Dengue Awareness Project</h1>
+    <p>Stay informed, stay safe — by Abhay Jadhav</p>
+  </header>
+
+  <main>
+    <section id="definition">
+      <h2><i class="fas fa-virus"></i> What is Dengue?</h2>
+      <p>Dengue is a mosquito-borne viral infection causing flu-like illness. Severe dengue can be life-threatening if not treated in time.</p>
+    </section>
+
+    <section id="prevention">
+      <h2><i class="fas fa-shield-alt"></i> Prevention Tips</h2>
+      <ul class="tips">
+        <li><i class="fas fa-tint"></i> Remove stagnant water around homes.</li>
+        <li><i class="fas fa-bed"></i> Use mosquito nets while sleeping.</li>
+        <li><i class="fas fa-tshirt"></i> Wear full-sleeve clothes.</li>
+        <li><i class="fas fa-home"></i> Keep surroundings clean and dry.</li>
+        <li><i class="fas fa-spray-can"></i> Use mosquito repellents regularly.</li>
+      </ul>
+    </section>
+
+    <section id="treatment">
+      <h2><i class="fas fa-briefcase-medical"></i> Treatment Steps</h2>
+      <table>
+        <tr>
+          <th>Treatment Step</th>
+          <th>What It Means</th>
+          <th>Why It Is Important</th>
+        </tr>
+        <tr>
+          <td>Rest & Hydration</td>
+          <td>Bed rest, drink water, ORS, juices, soups</td>
+          <td>Prevents dehydration from fever and plasma leakage</td>
+        </tr>
+        <tr>
+          <td>Fever Control</td>
+          <td>Use Paracetamol only (avoid aspirin/ibuprofen)</td>
+          <td>Controls fever safely without increasing bleeding</td>
+        </tr>
+        <tr>
+          <td>Nutrition</td>
+          <td>Light, easy-to-digest food (fruits, porridge, soups)</td>
+          <td>Supports recovery and boosts immunity</td>
+        </tr>
+        <tr>
+          <td>Monitoring</td>
+          <td>Regular health check-ups & symptom monitoring</td>
+          <td>Ensures timely intervention if condition worsens</td>
+        </tr>
+      </table>
+    </section>
+
+    <section id="charts">
+      <h2><i class="fas fa-chart-bar"></i> Dengue Cases in India (2024–2025)</h2>
+      <canvas id="casesChart" width="600" height="400"></canvas>
+    </section>
+
+    <section id="map">
+      <h2><i class="fas fa-map-marked-alt"></i> Dengue Spread Across Indian States</h2>
+      <div id="indiaMap" style="height: 500px; width: 100%;"></div>
+    </section>
+
+    <section id="globe">
+      <h2><i class="fas fa-globe-asia"></i> Global Dengue Cases Visualization</h2>
+      <div id="globeViz" style="height: 600px; width: 100%;"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Created by <strong>Abhay Jadhav</strong> | © 2025 Dengue Awareness Project</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+  <script src="dengue_data_nvbdcp_top_states.js"></script>
+
+  <script>
+    // Chart.js setup
+    const ctx = document.getElementById('casesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dengueData.map(d => d.state),
+        datasets: [{
+          label: 'Dengue Cases (2025)',
+          data: dengueData.map(d => d.cases),
+          backgroundColor: 'rgba(46, 204, 113, 0.7)'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true, position: 'bottom' } }
+      }
+    });
+
+    // Leaflet Map
+    const map = L.map('indiaMap').setView([22, 78], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    fetch("india_states_full.json")
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, { style: { color: "green", weight: 1, fillOpacity: 0.3 } }).addTo(map);
+      });
+
+    // Globe Visualization
+    const globe = Globe()
+      (document.getElementById('globeViz'))
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+      .pointsData([{ lat: 28.6, lng: 77.2, size: 1.2, color: "lime" }]);
+  </script>
+</body>
+</html>
