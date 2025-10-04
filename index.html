@@ -1,24 +1,27 @@
+
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dengue Awareness</title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:,">
+  <script src="https://unpkg.com/three@0.146.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/globe.gl@2.31.1/dist/globe.gl.min.js"></script>
 </head>
 <body>
 <header class="site-header">
   <div class="title-wrap">
     <div class="mosquitoes" aria-hidden="true">
-      <div class="mosq mosq1"></div>
-      <div class="mosq mosq2"></div>
-      <div class="mosq mosq3"></div>
+      <img src="mosq1.svg" class="mosq mosq1" alt="mosquito"/>
+      <img src="mosq2.svg" class="mosq mosq2" alt="mosquito"/>
+      <img src="mosq3.svg" class="mosq mosq3" alt="mosquito"/>
     </div>
     <h1 id="siteTitle">Dengue Awareness</h1>
   </div>
+
   <div class="nav">
     <button data-target="definition">What is Dengue?</button>
     <button data-target="symptoms">Symptoms</button>
@@ -31,7 +34,7 @@
 <main>
   <section id="definition" class="card">
     <h2>What is Dengue?</h2>
-    <p>Dengue is a mosquito-borne viral infection caused by the bite of the Aedes aegypti mosquito. Severe dengue can be life-threatening.</p>
+    <p>Dengue is a mosquito-borne viral infection caused by the bite of an Aedes mosquito.</p>
   </section>
 
   <section id="symptoms" class="card">
@@ -39,45 +42,55 @@
     <ul>
       <li>High fever</li>
       <li>Severe headache</li>
-      <li>Muscle and joint pains</li>
-      <li>Nausea and vomiting</li>
-      <li>Skin rash (2–5 days)</li>
+      <li>Muscle and joint pain</li>
+      <li>Rash and fatigue</li>
     </ul>
   </section>
 
   <section id="prevention" class="card">
     <h2>Prevention</h2>
     <ul>
-      <li>Use mosquito repellents and nets</li>
       <li>Eliminate stagnant water</li>
-      <li>Wear protective clothing</li>
-      <li>Community awareness</li>
+      <li>Use repellents and nets</li>
+      <li>Wear full-sleeve clothes</li>
     </ul>
   </section>
 
   <section id="charts" class="card">
     <h2>Visuals — Charts</h2>
+    <div class="chart-labels">
+      <div class="label left">🧾 Top 10 States by Dengue Cases</div>
+      <div class="label right">📈 Yearly Cases Trend (2021–2025)</div>
+    </div>
     <div class="charts-row">
       <div class="chart-box small"><canvas id="pieChart"></canvas></div>
       <div class="chart-box large"><canvas id="barChart"></canvas></div>
     </div>
-    <div class="line-chart"><canvas id="lineChart"></canvas></div>
+    <div class="line-chart">
+      <div class="label">⚰️ Deaths Trend (2021–2025)</div>
+      <canvas id="lineChart"></canvas>
+    </div>
     <div class="controls">
       <label for="yearSelect">Select Year:</label>
       <select id="yearSelect"></select>
       <label for="viewSelect">View:</label>
-      <select id="viewSelect"><option value="cases">Cases</option><option value="deaths">Deaths</option></select>
+      <select id="viewSelect">
+        <option value="cases">Cases</option>
+        <option value="deaths">Deaths</option>
+      </select>
     </div>
   </section>
 
-  <!-- 🌍 Updated Space Earth Section -->
   <section id="visuals" class="card">
     <h2>Visuals of Data</h2>
-    <div id="globeContainer" style="height:600px"></div>
+    <div id="globeArea" style="position:relative">
+      <canvas id="starfieldCanvas" style="position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;"></canvas>
+      <div id="globeContainer" style="height:600px;position:relative;z-index:2;"></div>
+    </div>
   </section>
 
   <section id="final" class="card center">
-    <button id="endBtn" class="end-btn">🎥 End Presentation</button>
+    <button id="dotBtn" class="dot-btn">DOT</button>
     <div id="goodbye" class="goodbye"><span>🦟 Take care of yourself</span></div>
   </section>
 </main>
@@ -86,103 +99,107 @@
 
 <script src="data.js"></script>
 
-<!-- Smooth Section Scroll -->
+<!-- Smooth Nav -->
 <script>
 document.querySelectorAll('.nav button').forEach(b=>{
-  b.addEventListener('click',()=>{document.getElementById(b.getAttribute('data-target')).scrollIntoView({behavior:'smooth'});});
+  b.addEventListener('click',()=>{document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth'});});
 });
 </script>
 
-<!-- 🦟 Mosquito Animation -->
-<script>
-function createMosqMotion(className, speed, radiusX, radiusY, phase){
-  const el=document.querySelector(className);let t=phase;
-  function step(){t+=speed;
-    const x=50+radiusX*Math.cos(t);const y=10+radiusY*Math.sin(2*t);
-    el.style.transform=`translate(${x}px,${y}px) rotate(${8*Math.sin(3*t)}deg)`;
-    requestAnimationFrame(step);}
-  step();
-}
-createMosqMotion('.mosq1',0.012,40,8,0);
-createMosqMotion('.mosq2',0.016,55,10,1.2);
-createMosqMotion('.mosq3',0.009,30,6,2.1);
-</script>
-
-<!-- 📊 Charts -->
+<!-- Charts -->
 <script>
 availableYears.forEach(y=>{
   const o=document.createElement('option');o.value=y;o.textContent=y;
   document.getElementById('yearSelect').appendChild(o);
 });
 document.getElementById('yearSelect').value=Math.max(...availableYears);
+
 let pieChart,barChart,lineChart;
-function drawAll(year){
+function drawCharts(year){
   const y=String(year);
   const entries=Object.keys(dengueDataAllStates).map(s=>({state:s,...dengueDataAllStates[s][y]}));
   entries.sort((a,b)=>b.cases-a.cases);
   const top10=entries.slice(0,10);
-  const labels=top10.map(e=>e.state),vals=top10.map(e=>e.cases);
-  const pctx=document.getElementById('pieChart').getContext('2d');
+  const labels=top10.map(e=>e.state);
+  const vals=top10.map(e=>e.cases);
+  const pieCtx=document.getElementById('pieChart').getContext('2d');
   if(pieChart) pieChart.destroy();
-  pieChart=new Chart(pctx,{type:'doughnut',data:{labels,datasets:[{data:vals}]}});
+  pieChart=new Chart(pieCtx,{type:'doughnut',data:{labels,datasets:[{label:'Cases',data:vals,backgroundColor:labels.map((_,i)=>`hsl(${i*35},70%,55%)`)}]},options:{plugins:{legend:{position:'bottom'}}}});
   const years=availableYears;
-  const sums=years.map(y=>Object.values(dengueDataAllStates).reduce((a,s)=>a+s[y].cases,0));
-  const bctx=document.getElementById('barChart').getContext('2d');
+  const totals=years.map(y=>Object.values(dengueDataAllStates).reduce((a,s)=>a+s[y].cases,0));
+  const barCtx=document.getElementById('barChart').getContext('2d');
   if(barChart) barChart.destroy();
-  barChart=new Chart(bctx,{type:'bar',data:{labels:years.map(String),datasets:[{data:sums}]}});
+  barChart=new Chart(barCtx,{type:'bar',data:{labels:years.map(String),datasets:[{label:'Total Dengue Cases',data:totals,backgroundColor:'rgba(46,204,113,0.7)'}]}});
   const deaths=years.map(y=>Object.values(dengueDataAllStates).reduce((a,s)=>a+s[y].deaths,0));
-  const lctx=document.getElementById('lineChart').getContext('2d');
+  const lineCtx=document.getElementById('lineChart').getContext('2d');
   if(lineChart) lineChart.destroy();
-  lineChart=new Chart(lctx,{type:'line',data:{labels:years.map(String),datasets:[{data:deaths,borderColor:'#e74c3c'}]}});
+  lineChart=new Chart(lineCtx,{type:'line',data:{labels:years.map(String),datasets:[{label:'Total Dengue Deaths',data:deaths,borderColor:'#000',tension:.3}]}});
 }
-drawAll(Math.max(...availableYears));
-document.getElementById('yearSelect').addEventListener('change',()=>drawAll(yearSelect.value));
+drawCharts(Math.max(...availableYears));
+document.getElementById('yearSelect').addEventListener('change',()=>drawCharts(yearSelect.value));
 </script>
 
-<!-- 🌍 3D Space Earth with Stars -->
-<script type="module">
-import Globe from "https://cdn.jsdelivr.net/npm/globe.gl@2.31.1/dist/globe.gl.min.js";
-const globeEl=document.getElementById("globeContainer");
-const world=Globe()(globeEl)
-  .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
+<!-- Space Globe -->
+<script>
+const starCanvas=document.getElementById('starfieldCanvas');
+function makeStars(c){
+  c.width=2048;c.height=1024;
+  const ctx=c.getContext('2d');
+  function draw(){
+    ctx.fillStyle='black';ctx.fillRect(0,0,c.width,c.height);
+    for(let i=0;i<500;i++){
+      const x=Math.random()*c.width,y=Math.random()*c.height,a=Math.random();
+      ctx.fillStyle=`rgba(255,255,255,${.3+.7*a})`;ctx.fillRect(x,y,1,1);
+    }
+  }
+  draw();setInterval(draw,2000);
+}
+makeStars(starCanvas);
+
+const globeContainer=document.getElementById('globeContainer');
+const world=Globe()(globeContainer)
+  .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+  .backgroundColor('rgba(0,0,0,0)')
   .showAtmosphere(true)
-  .atmosphereColor("lightblue")
+  .atmosphereColor('lightblue')
   .atmosphereAltitude(0.25)
-  .backgroundImageUrl("https://unpkg.com/three-globe/example/img/night-sky.png")
   .autoRotate(true)
   .autoRotateSpeed(0.25)
-  .pointAltitude("size")
-  .pointColor("color");
+  .pointAltitude('size')
+  .pointColor('color');
 
-fetch("india_states_full.json").then(r=>r.json()).then(g=>{
-  const make=(year,view)=>g.features.map(f=>{
-    const st=f.properties.name;
-    const v=dengueDataAllStates[st][String(year)][view];
-    const color=view==="deaths"?
-      (v>60?"#000":v>30?"#333":"#777"):
-      (v>15000?"#7f0000":v>8000?"#d93b3b":"#ff9b9b");
-    return {lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],size:Math.log10(v+1)*0.25,color,name:st,val:v};
+fetch('./india_states_full.json')
+  .then(r=>r.json())
+  .then(g=>{
+    const make=(year,view)=>g.features.map(f=>{
+      const st=f.properties.name;
+      const v=dengueDataAllStates[st][String(year)][view];
+      const color=view==='deaths'?(v>60?'#000':v>30?'#333':'#777'):(v>15000?'#7f0000':v>8000?'#d93b3b':'#ff9b9b');
+      return {lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],size:Math.log10(v+1)*0.25,color,name:st,val:v};
+    });
+    const update=()=>world.pointsData(make(yearSelect.value,viewSelect.value));
+    update();
+    yearSelect.addEventListener('change',update);
+    viewSelect.addEventListener('change',update);
   });
-  const update=()=>world.pointsData(make(yearSelect.value,viewSelect.value));
-  update();
-  yearSelect.addEventListener("change",update);
-  viewSelect.addEventListener("change",update);
-});
-window.addEventListener("load",()=>{
-  const globe=document.querySelector("#globeContainer canvas");
-  if(globe){globe.style.transform="scale(0.7)";globe.style.transition="transform 2s ease";setTimeout(()=>{globe.style.transform="scale(1)";},100);}
+
+window.addEventListener('load',()=>{
+  const g=document.querySelector('#globeContainer canvas');
+  if(g){g.style.transform='scale(0.7)';g.style.transition='transform 2s ease';setTimeout(()=>g.style.transform='scale(1)',100);}
 });
 </script>
 
-<!-- 🎬 DOT Outro -->
+<!-- DOT outro -->
 <script>
-const endBtn=document.getElementById('endBtn');
+const dotBtn=document.getElementById('dotBtn');
 const goodbye=document.getElementById('goodbye');
-endBtn.addEventListener('click',()=>{
+dotBtn.addEventListener('click',()=>{
   document.body.classList.add('dim');
   for(let i=0;i<3;i++){
-    const el=document.createElement('div');
+    const el=document.createElement('img');
+    el.src='mosq1.svg';
     el.className='mosq fly'+i;
+    el.style.position='fixed';el.style.zIndex=9999;
     document.body.appendChild(el);
     setTimeout(()=>el.classList.add('toCenter'),50+i*300);
     setTimeout(()=>{el.classList.add('fadeout');setTimeout(()=>el.remove(),2000);},5000);
@@ -191,6 +208,6 @@ endBtn.addEventListener('click',()=>{
   setTimeout(()=>{goodbye.classList.remove('show');document.body.classList.remove('dim');},5200);
 });
 </script>
+
 </body>
 </html>
-
