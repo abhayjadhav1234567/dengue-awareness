@@ -30,13 +30,42 @@
 </header>
 
 <main>
-  <section id="definition" class="card"><h2>What is Dengue?</h2>
-    <p>Dengue is a mosquito-borne viral infection caused by the bite of the Aedes aegypti mosquito. Severe dengue can be life-threatening.</p>
+  <section id="definition" class="card">
+    <h2>What is Dengue?</h2>
+    <p>Dengue is a mosquito-borne viral infection caused by the bite of the <strong>Aedes aegypti</strong> mosquito. Severe dengue can be life-threatening and needs immediate medical care.</p>
   </section>
 
   <section id="symptoms" class="card">
     <h2>Symptoms</h2>
-    <ul><li>High fever</li><li>Severe headache</li><li>Muscle and joint pains</li><li>Nausea and vomiting</li><li>Skin rash (2–5 days)</li></ul>
+    <ul>
+      <li>High fever</li>
+      <li>Severe headache</li>
+      <li>Muscle and joint pains</li>
+      <li>Nausea and vomiting</li>
+      <li>Skin rash (2–5 days after fever starts)</li>
+    </ul>
+
+    <h3>Organs Affected by Dengue</h3>
+    <div class="table-wrap">
+      <table class="organs">
+        <thead>
+          <tr>
+            <th>Organ</th>
+            <th>Normal Work</th>
+            <th>What Dengue Virus Does</th>
+            <th>What Problem Happens</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Liver</strong> 🟠</td><td>Cleans blood, makes proteins for clotting, helps digestion</td><td>Virus enters liver cells → immune attack → swelling → enzymes leak into blood</td><td>Poor cleaning, less clotting → <strong>bleeding risk, liver failure</strong></td></tr>
+          <tr><td><strong>Bone Marrow</strong> 🔴</td><td>Produces blood cells (RBC, WBC, Platelets)</td><td>Virus slows marrow → platelet production drops</td><td>Very <strong>low platelets</strong> → bleeding</td></tr>
+          <tr><td><strong>Blood Vessels</strong> 🔵</td><td>Carry blood safely without leakage</td><td>Virus weakens vessel walls → plasma leaks out</td><td>Blood pressure falls → organs don’t get oxygen → <strong>shock</strong></td></tr>
+          <tr><td><strong>Spleen</strong> 🟣</td><td>Filters blood, removes old cells, supports immunity</td><td>Becomes overworked and swells up</td><td>Pain, rare risk of <strong>rupture and bleeding</strong></td></tr>
+          <tr><td><strong>Brain</strong> 🟡</td><td>Controls body functions, memory, thinking</td><td>Sometimes swelling or small bleeding in brain tissue</td><td>Headache, confusion, seizures → <strong>unconsciousness</strong></td></tr>
+          <tr><td><strong>Heart</strong> 💚</td><td>Pumps blood to whole body</td><td>Virus may weaken heart muscles (myocarditis)</td><td>Weak pumping → fatigue, chest pain, breathlessness</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <section id="prevention" class="card">
@@ -45,13 +74,34 @@
       <li>Use mosquito repellents and nets</li>
       <li>Eliminate stagnant water</li>
       <li>Wear protective clothing</li>
-      <li>Community awareness</li>
+      <li>Promote community awareness</li>
     </ul>
   </section>
 
   <section id="treatment" class="card">
     <h2>Treatment & Care</h2>
-    <p>Consult a doctor immediately if dengue symptoms appear. Avoid self-medication and stay hydrated.</p>
+    <div class="table-wrap">
+      <table class="treatment">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Treatment Step</th>
+            <th>What It Means</th>
+            <th>Why It Is Important</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>🏠 <strong>Home Remedies / Self-Care</strong></td><td><strong>Rest & Hydration</strong></td><td>Bed rest, drink lots of water, ORS, juices, coconut water</td><td>Prevents dehydration from fever and plasma leakage</td></tr>
+          <tr><td></td><td><strong>Fever Control</strong></td><td>Take <strong>Paracetamol</strong> only (avoid aspirin/ibuprofen)</td><td>Controls fever safely without increasing bleeding risk</td></tr>
+          <tr><td></td><td><strong>Nutrition</strong></td><td>Eat light, healthy food (fruits, porridge, vegetables, soups)</td><td>Helps recovery and boosts immunity</td></tr>
+          <tr><td></td><td><strong>Monitoring at Home</strong></td><td>Check temperature, watch for warning signs</td><td>Detects early danger signs so hospital care can be given quickly</td></tr>
+          <tr><td>🏥 <strong>Doctor / Hospital Care</strong></td><td><strong>Regular Blood Tests</strong></td><td>Platelet count & hematocrit monitoring</td><td>Detects risk of bleeding and shock early</td></tr>
+          <tr><td></td><td><strong>IV Fluids</strong></td><td>Intravenous fluids if patient is dehydrated or in shock</td><td>Maintains blood pressure and hydration</td></tr>
+          <tr><td></td><td><strong>Oxygen & Monitoring</strong></td><td>Patient kept under observation with oxygen support if needed</td><td>Prevents organ damage and shock</td></tr>
+          <tr><td></td><td><strong>Platelet / Blood Transfusion</strong></td><td>Given only if platelets are very low or severe bleeding</td><td>Saves life in critical dengue cases</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <section id="charts" class="card">
@@ -90,13 +140,13 @@ document.querySelectorAll('.nav button').forEach(btn=>{
   });
 });
 
-function animateMosquito(sel, speed, rx, ry, phase){
+function animateMosquito(sel,speed,rx,ry,phase){
   const el=document.querySelector(sel);
   let t=phase;
   (function step(){
     t+=speed;
     const x=rx*Math.cos(t),y=ry*Math.sin(2*t);
-    el.style.transform=`translate(${x}px,${y}px) rotate(${10*Math.sin(3*t)}deg)`;
+    el.style.transform=\`translate(\${x}px,\${y}px) rotate(\${10*Math.sin(3*t)}deg)\`;
     requestAnimationFrame(step);
   })();
 }
@@ -111,7 +161,7 @@ function drawStars(){
   ctx.fillStyle='black';ctx.fillRect(0,0,stars.width,stars.height);
   for(let i=0;i<400;i++){
     const x=Math.random()*stars.width,y=Math.random()*stars.height;
-    const a=Math.random();ctx.fillStyle=`rgba(255,255,255,${.3+.7*a})`;
+    const a=Math.random();ctx.fillStyle=\`rgba(255,255,255,\${.3+.7*a})\`;
     ctx.fillRect(x,y,1,1);
   }
 }
@@ -129,8 +179,7 @@ fetch('india_states_full.json').then(r=>r.json()).then(g=>{
     const st=f.properties.name;
     const data=dengueDataAllStates[st]['2025'];
     const color=data.cases>15000?'red':data.cases>8000?'orange':'green';
-    return {lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],
-            size:0.3,color,name:st};
+    return {lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],size:0.3,color,name:st};
   });
   world.pointsData(pts).pointAltitude('size').pointColor('color')
        .labelsData(pts).labelLat(d=>d.lat).labelLng(d=>d.lng)
@@ -146,8 +195,7 @@ endBtn.addEventListener('click',()=>{
     el.className='mosq fly'+i;
     document.body.appendChild(el);
     setTimeout(()=>el.classList.add('toCenter'),i*300);
-    setTimeout(()=>{el.classList.add('fadeout');
-    setTimeout(()=>el.remove(),2000);},5000);
+    setTimeout(()=>{el.classList.add('fadeout');setTimeout(()=>el.remove(),2000);},5000);
   }
   goodbye.classList.add('show');
   setTimeout(()=>goodbye.classList.remove('show'),5500);
