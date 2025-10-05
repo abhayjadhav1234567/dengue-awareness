@@ -1,19 +1,307 @@
+:root {
+  --accent1: #2ecc71;
+  --accent2: #27ae60;
+  --accent3: #f39c12;
+  --bg: linear-gradient(180deg, #f0fff4, #f7fbff);
+}
 
-:root{--accent1:#2ecc71;--accent2:#27ae60;--accent3:#f39c12;--bg:linear-gradient(180deg,#f0fff4,#f7fbff)}
-*{box-sizing:border-box}body{font-family:Inter,Segoe UI,Arial,sans-serif;margin:0;background:var(--bg);color:#222;transition:background 0.4s}
-body.dim{background:linear-gradient(180deg,#e6eef0,#cddfe2)}
-.site-header{padding:20px;text-align:center;background:linear-gradient(90deg,var(--accent1),#28a745);color:#fff}
-.title-wrap{display:flex;align-items:center;justify-content:center;gap:20px;position:relative}
-.mosquitoes{position:absolute;left:10%;top:6px;width:160px;height:80px;pointer-events:none}
-.mosq{width:48px;height:24px;background-image:linear-gradient(#222,#111);border-radius:12px;position:absolute;background-repeat:no-repeat;box-shadow:0 6px 12px rgba(0,0,0,0.25)}
-.mosq::after{content:'';position:absolute;right:-22px;top:6px;width:36px;height:6px;border-radius:6px;background:linear-gradient(#666,#444);transform:rotate(10deg)}
-.mosq1{left:0;top:10px}
-.mosq2{right:0;top:20px;transform:scale(0.9)}
-.mosq3{left:60px;top:30px;transform:scale(1.1)}
-.mosq.fly0,.mosq.fly1,.mosq.fly2{width:56px;height:28px;border-radius:14px;position:fixed;background:linear-gradient(#222,#111);box-shadow:0 12px 24px rgba(0,0,0,0.35);z-index:9999;opacity:0.95}
-.mosq.toCenter{transition:transform 1.2s ease, opacity 1s ease; transform:translate(calc(50vw - 28px), calc(45vh - 14px)) scale(1.2);}
-.mosq.fadeout{transition:opacity 1s ease; opacity:0}
-.nav{margin-top:8px}
-.nav button{margin:6px;padding:8px 12px;border-radius:20px;border:none;background:rgba(255,255,255,0.12);color:#fff;cursor:pointer}
-.card{background:rgba(255,255,255,0.98);margin:20px auto;padding:18px;border-radius:12px;max-width:1100px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
-.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:left}.chart-labels{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.charts-row{display:flex;gap:18px;flex-wrap:wrap}.chart-box.small{flex:1 1 320px;max-width:420px}.chart-box.large{flex:2 1 560px}.line-chart{margin-top:12px}.controls{margin-top:12px;display:flex;gap:12px;align-items:center}.site-footer{text-align:center;padding:16px;color:#fff;background:linear-gradient(90deg,#27ae60,#1abc9c);margin-top:20px}.hint{font-size:0.9rem;color:#555;margin-top:8px}.goodbye{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);padding:20px 28px;border-radius:10px;color:#fff;font-size:1.6rem;opacity:0;pointer-events:none;box-shadow:0 12px 36px rgba(0,0,0,0.5)}.goodbye.show{opacity:1;transition:opacity 0.5s ease}.goodbye span{color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.95)}@media(max-width:800px){.charts-row{flex-direction:column}.chart-box.large{max-width:100%}}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: #222;
+  margin: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* HEADER */
+.site-header {
+  padding: 20px 10px;
+  text-align: center;
+  background: linear-gradient(90deg, var(--accent1), #28a745);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+/* 🦟 Realistic Mosquitoes */
+.mosquitoes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.mosq {
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: center;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
+  opacity: 0.9;
+  object-fit: contain;
+  animation: wing 0.1s infinite alternate ease-in-out;
+}
+
+@keyframes wing {
+  from { transform: scale(1) rotate(-2deg); }
+  to { transform: scale(1.05) rotate(2deg); }
+}
+
+/* NAVIGATION */
+.nav {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+
+.nav button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* CARD SECTIONS */
+.card {
+  background: #fff;
+  margin: 20px auto;
+  padding: 18px;
+  border-radius: 12px;
+  max-width: 1100px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  margin-bottom: 12px;
+  font-size: 1.6rem;
+  color: var(--accent2);
+}
+
+.card ul {
+  margin-left: 20px;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* TABLES */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  font-size: 0.95rem;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background: var(--accent1);
+  color: white;
+}
+
+/* CHARTS */
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.chart-box {
+  flex: 1 1 300px;
+  max-width: 480px;
+}
+
+.line-chart {
+  margin-top: 20px;
+}
+
+.controls {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* FOOTER */
+.site-footer {
+  text-align: center;
+  padding: 16px;
+  color: #fff;
+  background: linear-gradient(90deg, #27ae60, #1abc9c);
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+/* END BUTTON */
+.end-btn {
+  background: var(--accent3);
+  color: #fff;
+  border: none;
+  padding: 12px 22px;
+  font-size: 1.1rem;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.end-btn:hover {
+  background: #e67e22;
+}
+
+/* “Take Care” Text */
+.goodbye {
+  position: fixed;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 28px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.4rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  text-align: center;
+  z-index: 9999;
+}
+
+.goodbye.show {
+  opacity: 1;
+}
+
+/* Mosquito Animation (When Ending) */
+.mosq.fly0, .mosq.fly1, .mosq.fly2 {
+  width: 56px;
+  height: 28px;
+  position: fixed;
+  z-index: 9999;
+  opacity: 0.95;
+  transition: transform 1.2s ease, opacity 1s ease;
+}
+
+.mosq.toCenter {
+  transform: translate(calc(50vw - 28px), calc(45vh - 14px)) scale(1.2);
+}
+
+.mosq.fadeout {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+/* 📱 MOBILE RESPONSIVE DESIGN */
+@media (max-width: 800px) {
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+
+  .nav button {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+
+  .chart-box {
+    max-width: 100%;
+  }
+
+  .end-btn {
+    font-size: 1rem;
+    padding: 10px 18px;
+  }
+}
+
+@media (max-width: 500px) {
+  .site-header {
+    padding: 14px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .card h2 {
+    font-size: 1.3rem;
+  }
+
+  .nav {
+    gap: 5px;
+  }
+
+  .nav button {
+    padding: 6px 8px;
+    font-size: 0.85rem;
+  }
+
+  .table-wrap {
+    margin-bottom: 12px;
+  }
+
+  .mosq {
+    width: 40px;
+    height: 40px;
+  }
+}
