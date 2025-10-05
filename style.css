@@ -1,1 +1,117 @@
-/* Final CSS will go here */
+:root{
+  --accent1:#2ecc71;
+  --accent2:#27ae60;
+  --accent3:#f39c12;
+  --bg:linear-gradient(180deg,#f0fff4,#f7fbff);
+  --card-white: rgba(255,255,255,0.98);
+}
+*{box-sizing:border-box}
+body{
+  font-family:Inter, "Segoe UI", Arial, sans-serif;
+  margin:0;
+  color:#222;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Header */
+.site-header{
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  color:#fff;
+  padding:22px 12px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.title-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:24px;
+  max-width:1200px;
+  margin:0 auto;
+  position:relative;
+}
+.title-block{
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+}
+#siteTitle{
+  margin:0;
+  font-size:36px;
+  font-weight:700;
+  letter-spacing:0.2px;
+}
+
+/* pills (header nav) */
+.keyword-row{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.pill{
+  background:rgba(255,255,255,0.18);
+  color:#fff;border:none;padding:8px 14px;border-radius:22px;cursor:pointer;font-weight:600;
+}
+.pill:hover{background:rgba(255,255,255,0.28)}
+
+/* mosquitoes container */
+.mosquitoes{
+  position:absolute; left:28px; top:12px; width:220px; height:90px; pointer-events:none;
+}
+.mosq{
+  position:absolute; width:62px; height:auto; object-fit:contain;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,0.25));
+  transition: transform 0.12s linear;
+}
+
+/* main card */
+main{padding:18px 12px}
+.card{
+  background:var(--card-white);
+  border-radius:12px;
+  max-width:1150px;
+  margin:18px auto;
+  padding:18px;
+  box-shadow:0 12px 30px rgba(30,60,50,0.04);
+}
+
+/* tables */
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th,td{padding:10px;border:1px solid #e6eef0;text-align:left}
+th{background:var(--accent1);color:#fff}
+
+/* charts card */
+.charts-card .chart-controls{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.charts-card .chart-row{display:flex;gap:24px;align-items:flex-start}
+.chart-left{flex:1 1 420px;min-width:320px}
+.chart-right{flex:1.35 1 520px;min-width:360px}
+.chart-title{font-weight:600;margin-bottom:8px;color:#2b3b3a}
+.line-title{font-weight:600;margin-top:22px;margin-bottom:6px;color:#2b3b3a}
+
+/* canvas size handling */
+canvas{width:100% !important;height:100% !important;}
+
+/* end/dot */
+.center{text-align:center}
+.end-btn{background:var(--accent3);border:none;color:#fff;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:700}
+.goodbye{position:fixed;left:50%;top:48%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);color:#fff;padding:18px 22px;border-radius:12px;font-size:1.1rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.goodbye.show{opacity:1;pointer-events:auto}
+
+/* footer */
+.site-footer{background:linear-gradient(90deg,var(--accent2),#1abc9c);color:#fff;padding:16px;text-align:center;margin-top:18px;border-radius:8px}
+
+/* responsive tweaks */
+@media(max-width:1000px){
+  .chart-row{flex-direction:column}
+  .chart-right{order:2}
+  .chart-left{order:1}
+  .mosquitoes{left:14px; top:8px}
+  #siteTitle{font-size:28px}
+}
+@media(max-width:600px){
+  #siteTitle{font-size:22px}
+  .mosquitoes{display:block; left:8px; top:6px}
+  .mosq{width:44px}
+  table{min-width:0}
+  .card{padding:14px}
+  .keyword-row{gap:8px}
+}
