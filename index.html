@@ -1,1 +1,262 @@
-<!-- Final HTML will go here -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dengue Awareness</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:,">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="title-wrap">
+    <div class="mosquitoes" aria-hidden="true">
+      <!-- Make sure the file mosquito.png exists in same folder -->
+      <img src="mosquito.png" class="mosq mosq1" alt="mosquito">
+      <img src="mosquito.png" class="mosq mosq2" alt="mosquito">
+      <img src="mosquito.png" class="mosq mosq3" alt="mosquito">
+    </div>
+
+    <div class="title-block">
+      <h1 id="siteTitle">Dengue Awareness</h1>
+      <div class="keyword-row">
+        <button class="pill" data-target="definition">What is Dengue?</button>
+        <button class="pill" data-target="symptoms">Symptoms</button>
+        <button class="pill" data-target="prevention">Prevention</button>
+        <button class="pill" data-target="treatment">Treatment</button>
+        <button class="pill" data-target="charts">Visuals of Data</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Definition -->
+  <section id="definition" class="card">
+    <h2>What is Dengue?</h2>
+    <p>Dengue is a mosquito-borne viral infection caused by the bite of the <strong>Aedes aegypti</strong> mosquito. Severe dengue can be life-threatening.</p>
+  </section>
+
+  <!-- Symptoms + organs -->
+  <section id="symptoms" class="card">
+    <h2>Symptoms</h2>
+    <ul>
+      <li>High fever</li>
+      <li>Severe headache</li>
+      <li>Muscle & joint pains</li>
+      <li>Nausea & vomiting</li>
+      <li>Skin rash (2–5 days after fever starts)</li>
+    </ul>
+
+    <h3>Organs Affected</h3>
+    <div class="table-wrap">
+      <table class="organs">
+        <thead>
+          <tr><th>Organ</th><th>Normal Work</th><th>What Dengue Virus Does</th><th>What Problem Happens</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Liver</strong> 🟠</td><td>Cleans blood, makes clotting proteins</td><td>Virus inflames liver cells</td><td><strong>Bleeding risk, liver failure</strong></td></tr>
+          <tr><td><strong>Bone Marrow</strong> 🔴</td><td>Produces blood cells</td><td>Slows platelet production</td><td><strong>Very low platelets → bleeding</strong></td></tr>
+          <tr><td><strong>Blood Vessels</strong> 🔵</td><td>Carry blood safely</td><td>Walls become leaky</td><td><strong>Plasma leakage → shock</strong></td></tr>
+          <tr><td><strong>Spleen</strong> 🟣</td><td>Filters blood, supports immunity</td><td>Can swell and overwork</td><td>Pain, rare rupture risk</td></tr>
+          <tr><td><strong>Brain</strong> 🟡</td><td>Controls functions</td><td>Rare swelling/bleeding</td><td>Confusion, seizures (rare, severe)</td></tr>
+          <tr><td><strong>Heart</strong> 💚</td><td>Pumps blood</td><td>May weaken muscles (rare)</td><td>Fatigue, chest pain</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Prevention & Treatment -->
+  <section id="prevention" class="card">
+    <h2>Prevention</h2>
+    <ul>
+      <li>Use mosquito repellents & nets</li>
+      <li>Eliminate stagnant water</li>
+      <li>Wear protective clothing</li>
+      <li>Community awareness & cleanup</li>
+    </ul>
+
+    <h3>Treatment & Care</h3>
+    <div class="table-wrap">
+      <table class="treatment">
+        <thead><tr><th>Type</th><th>Treatment Step</th><th>What It Means</th><th>Why It Matters</th></tr></thead>
+        <tbody>
+          <tr><td>🏠 <strong>Home</strong></td><td><strong>Rest & Hydration</strong></td><td>Drink fluids: water, ORS, juices, coconut water</td><td>Prevents dehydration</td></tr>
+          <tr><td></td><td><strong>Fever Control</strong></td><td>Take <strong>Paracetamol</strong> only</td><td>Avoid NSAIDs (bleeding risk)</td></tr>
+          <tr><td></td><td><strong>Nutrition</strong></td><td>Light, healthy meals</td><td>Supports recovery</td></tr>
+          <tr><td>🏥 <strong>Hospital</strong></td><td><strong>Blood Tests & Monitoring</strong></td><td>Platelet & hematocrit checks</td><td>Detects bleeding/shock early</td></tr>
+          <tr><td></td><td><strong>IV Fluids</strong></td><td>For dehydration / shock</td><td>Stabilizes blood pressure</td></tr>
+          <tr><td></td><td><strong>Transfusion</strong></td><td>Platelet/blood transfusion if needed</td><td>Life-saving in severe bleeding</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Charts visuals (donut + bar + line) -->
+  <section id="charts" class="card charts-card">
+    <h2>Visuals — Charts</h2>
+
+    <div class="chart-controls">
+      <label for="yearSelect">Select Year:</label>
+      <select id="yearSelect" aria-label="Select Year"></select>
+
+      <label for="chartType">Chart Type:</label>
+      <select id="chartType" aria-label="Chart Type">
+        <option value="doughnut">Doughnut</option>
+        <option value="pie">Pie</option>
+      </select>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-left">
+        <div class="chart-title">📜 Top 10 States by Dengue Cases (Selected Year)</div>
+        <canvas id="pieChart" height="360"></canvas>
+      </div>
+
+      <div class="chart-right">
+        <div class="chart-title">📈 Yearly Dengue Cases Trend (2021–2025)</div>
+        <canvas id="barChart" height="360"></canvas>
+      </div>
+    </div>
+
+    <div class="line-title">⚰️ Dengue Deaths Trend (2021–2025)</div>
+    <canvas id="lineChart" height="220"></canvas>
+  </section>
+
+  <!-- End / DOT -->
+  <section id="final" class="card center">
+    <button id="endBtn" class="end-btn">DOT</button>
+    <div id="goodbye" class="goodbye">🦟 <strong>Take care of yourself</strong></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>© 2025 Dengue Awareness</p>
+</footer>
+
+<!-- Your data file (must define dengueDataAllStates and availableYears) -->
+<script src="data.js"></script>
+
+<script>
+/* -------- smooth nav for header pills -------- */
+document.querySelectorAll('.pill').forEach(btn=>{
+  btn.addEventListener('click', ()=> {
+    const id = btn.getAttribute('data-target');
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+  });
+});
+
+/* -------- realistic floating mosquitoes (no rotation) --------
+   - 3 images move with gentle, different sine/noise offsets
+   - images must exist as mosquito.png in same folder
+*/
+function addFloating(selector, amplitudeX, amplitudeY, speed, phase) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  let t = phase;
+  function frame() {
+    t += speed;
+    // gentle smooth Lissajous-style motion (no rotation)
+    const x = Math.sin(t) * amplitudeX + Math.sin(t * 0.5) * (amplitudeX*0.25);
+    const y = Math.cos(t * 0.9) * amplitudeY + Math.cos(t * 0.4) * (amplitudeY*0.2);
+    el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+addFloating('.mosq1', 58, 18, 0.012, 0.1);
+addFloating('.mosq2', 85, 22, 0.010, 2.2);
+addFloating('.mosq3', 70, 16, 0.014, 4.1);
+
+/* -------- populate year select (from data.js availableYears) -------- */
+const yearSelect = document.getElementById('yearSelect');
+availableYears.forEach(y => {
+  const opt = document.createElement('option');
+  opt.value = y; opt.textContent = y;
+  yearSelect.appendChild(opt);
+});
+yearSelect.value = Math.max(...availableYears);
+
+/* -------- Charts rendering (pie/doughnut + bar + line) -------- */
+let pieChart = null, barChart = null, lineChart = null;
+function drawCharts(year, chartKind) {
+  const yearStr = String(year);
+
+  // Build top10 by cases for selected year
+  const entries = Object.keys(dengueDataAllStates).map(s => {
+    const v = dengueDataAllStates[s][yearStr];
+    return { state: s, cases: v.cases, deaths: v.deaths };
+  }).sort((a,b) => b.cases - a.cases);
+
+  const top10 = entries.slice(0, 10);
+  const pieLabels = top10.map(x => x.state);
+  const pieData = top10.map(x => x.cases);
+  const palette = pieLabels.map((_, i) => `hsl(${i*34},75%,52%)`);
+
+  // Pie / Doughnut
+  const pctx = document.getElementById('pieChart').getContext('2d');
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(pctx, {
+    type: chartKind,
+    data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: palette, borderColor: '#fff', borderWidth: 2 }]},
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 14 } } },
+      cutout: chartKind === 'doughnut' ? '55%' : '0%'
+    }
+  });
+
+  // Bar: total cases/year
+  const years = availableYears;
+  const totals = years.map(y => Object.keys(dengueDataAllStates).reduce((acc,s) => acc + dengueDataAllStates[s][String(y)].cases, 0));
+  const bctx = document.getElementById('barChart').getContext('2d');
+  if (barChart) barChart.destroy();
+  barChart = new Chart(bctx, {
+    type: 'bar',
+    data: { labels: years.map(String), datasets: [{ label: 'Total Dengue Cases (India)', data: totals, backgroundColor: 'rgba(46,204,113,0.75)' }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }},
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Number of Cases' } } }
+    }
+  });
+
+  // Line: deaths per year (India total)
+  const deaths = years.map(y => Object.keys(dengueDataAllStates).reduce((acc, s) => acc + dengueDataAllStates[s][String(y)].deaths, 0));
+  const lctx = document.getElementById('lineChart').getContext('2d');
+  if (lineChart) lineChart.destroy();
+  lineChart = new Chart(lctx, {
+    type: 'line',
+    data: { labels: years.map(String), datasets: [{ label: 'Dengue Deaths (India)', data: deaths, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.12)', pointRadius: 4, tension: 0.3 }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }},
+      scales: { y: { beginAtZero: false, title: { display: true, text: 'Number of Deaths' } } }
+    }
+  });
+}
+
+/* init charts */
+const chartTypeSelect = document.getElementById('chartType');
+function updateAll() {
+  drawCharts(yearSelect.value, chartTypeSelect.value);
+}
+updateAll();
+
+/* event handlers */
+yearSelect.addEventListener('change', updateAll);
+chartTypeSelect.addEventListener('change', updateAll);
+
+/* DOT button final message animation */
+document.getElementById('endBtn').addEventListener('click', () => {
+  const goodbye = document.getElementById('goodbye');
+  goodbye.classList.add('show');
+  setTimeout(()=> goodbye.classList.remove('show'), 5200);
+});
+</script>
+</body>
+</html>
